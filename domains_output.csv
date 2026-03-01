@@ -1,0 +1,5 @@
+domain,status,error
+http://google.com,200,
+http://bbc.co.uk,200,
+http://facebook.com,200,
+http://amazon.com,200,
