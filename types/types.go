@@ -15,6 +15,7 @@ type StatusList struct {
 	Name         string
 	Status       int
 	ResponseTime float64
+	ResponseSize float64
 	Err          error
 }
 
@@ -38,18 +39,19 @@ func (sd StatusDB) SaveToOutputCSV(filename string) error {
 	defer writer.Flush()
 
 	// define the headers for the final csv
-	writer.Write([]string{"domain", "status", "response_time_s", "error"})
+	writer.Write([]string{"domain", "status", "response_time_s", "response_size_bytes", "error"})
 
 	// loop through the data in the DB struct and extract the data as strings
 	for _, status := range sd {
 		statusStr := strconv.Itoa(status.Status)
 		statusResponseTime := strconv.FormatFloat(status.ResponseTime, 'f', 4, 64)
+		statusResponseSize := strconv.FormatFloat(status.ResponseSize, 'f', 4, 64)
 		errStr := ""
 		if status.Err != nil {
 			errStr = status.Err.Error()
 		}
 		// writes the final file, each time it does it it adds a row to the csv
-		writer.Write([]string{status.Name, statusStr, statusResponseTime, errStr})
+		writer.Write([]string{status.Name, statusStr, statusResponseTime, statusResponseSize, errStr})
 	}
 
 	return nil
@@ -59,6 +61,6 @@ func (sd StatusDB) SaveToOutputCSV(filename string) error {
 // add print method to statusDB type
 func (sd StatusDB) Print() {
 	for _, status := range sd {
-		fmt.Println(status.Name, status.Status, status.ResponseTime, status.Err)
+		fmt.Println(status.Name, status.Status, status.ResponseTime, status.ResponseSize, status.Err)
 	}
 }

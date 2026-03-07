@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"domain-checker/types"
+	"io"
 	"net/http"
 	"time"
 )
@@ -18,24 +19,31 @@ func GetStatus(dl types.DomainList) types.StatusDB {
 		go func(domain string) {
 
 			startTime := time.Now()
-
 			resp, err := http.Get(domain)
-
 			elapsed := time.Since(startTime).Seconds()
 
-			// Define status
+			// Define status struct for each domain
 			status := types.StatusList{
 				Name:         domain,
 				Status:       0,
 				ResponseTime: 0,
+				ResponseSize: 0,
 				Err:          err,
 			}
 
 			// If there are no errors add data to statusList
 			if err == nil {
-				status.Status = resp.StatusCode
-				status.ResponseTime = elapsed
-				resp.Body.Close()
+				// open response body and read it, if there are no errors append all data to the status.
+				body, readErr := io.ReadAll(resp.Body)
+				defer resp.Body.Close()
+
+				if readErr == nil {
+					status.Status = resp.StatusCode
+					status.ResponseTime = elapsed
+					status.ResponseSize = float64(len(body))
+				} else {
+					status.Err = readErr
+				}
 			}
 
 			// Send to go channel

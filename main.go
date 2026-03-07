@@ -3,6 +3,7 @@ package main
 import (
 	"domain-checker/crawler"
 	"domain-checker/csv"
+	"flag"
 	"fmt"
 	"time"
 )
@@ -12,32 +13,28 @@ import (
 // Output: domains with status code
 
 func main() {
-	//only used for performance
-	appStartTime := time.Now()
+	//input filename
+	filename := flag.String("file", "data/input/domains.csv", "CSV file with domains")
+	outputFile := flag.String("output", "data/output/output_domains.csv", "Output CSV File")
+	flag.Parse()
 
-	fmt.Println("Started: ", appStartTime)
+	fmt.Println("Started: ", time.Now())
 
-	filename := "data/input/" + "tranco_list_250.csv"
-
-	domains := csv.ReadDomainsCsv(filename)
+	domains := csv.ReadDomainsCsv(*filename)
 
 	//only used for performance
 	crawlStartTime := time.Now()
 
-	domains_status := crawler.GetStatus(domains)
+	domainsStatus := crawler.GetStatus(domains)
 
 	//only used for performance
 	crawlElapsedTime := time.Since(crawlStartTime)
 
-	err := domains_status.SaveToOutputCSV("./data/output/" + "output_" + filename)
+	err := domainsStatus.SaveToOutputCSV(*outputFile)
 	if err != nil {
 		fmt.Println("Error saving CSV:", err)
 	}
 
-	//only used for performance
-	appElapsed := time.Since(appStartTime)
-
-	fmt.Println("Total Time: ", appElapsed)
 	fmt.Println("Crawl Time: ", crawlElapsedTime)
 
 }
