@@ -1,11 +1,9 @@
 package main
 
 import (
-	"domain-checker/crawler"
-	"domain-checker/csv"
-	"flag"
+	"domain-checker/handlers"
 	"fmt"
-	"time"
+	"net/http"
 )
 
 // Check the status of web domains
@@ -13,28 +11,26 @@ import (
 // Output: domains with status code
 
 func main() {
-	//input filename
-	filename := flag.String("file", "data/input/domains.csv", "CSV file with domains")
-	outputFile := flag.String("output", "data/output/output_domains.csv", "Output CSV File")
-	flag.Parse()
 
-	fmt.Println("Started: ", time.Now())
+	
 
-	domains := csv.ReadDomainsCsv(*filename)
+	// Serves form input to upload csv files
+	http.HandleFunc("/", handlers.InputHandler)
+	
+	// Processes CSV files and sends to dashboard template and also gets the output file name
+	var downloadName, outputFilePath string
 
-	//only used for performance
-	crawlStartTime := time.Now()
+	http.HandleFunc("/process", func(w http.ResponseWriter, req *http.Request) {
+		downloadName, outputFilePath = handlers.FileHandler(w, req)
+	})
 
-	domainsStatus := crawler.GetStatus(domains)
-
-	//only used for performance
-	crawlElapsedTime := time.Since(crawlStartTime)
-
-	err := domainsStatus.SaveToOutputCSV(*outputFile)
-	if err != nil {
-		fmt.Println("Error saving CSV:", err)
-	}
-
-	fmt.Println("Crawl Time: ", crawlElapsedTime)
+	// Download data in CSV format from the app.
+	http.HandleFunc("/downloadcsv", func(w http.ResponseWriter, req *http.Request){
+		w.Header().Set("Content-Type", "text/csv")
+		w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, downloadName))
+		http.ServeFile(w, req, outputFilePath)
+	})
+	
+	http.ListenAndServe(":8080", nil)
 
 }

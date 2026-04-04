@@ -2,13 +2,9 @@ package types
 
 import (
 	"encoding/csv"
-	"fmt"
 	"os"
 	"strconv"
 )
-
-// input type
-type DomainList []string
 
 // intermediate type
 type StatusList struct {
@@ -39,7 +35,7 @@ func (sd StatusDB) SaveToOutputCSV(filename string) error {
 	defer writer.Flush()
 
 	// define the headers for the final csv
-	writer.Write([]string{"domain", "status", "response_time_s", "response_size_bytes", "error"})
+	writer.Write([]string{"domain", "status", "response_time_ms", "response_size_kb", "error"})
 
 	// loop through the data in the DB struct and extract the data as strings
 	for _, status := range sd {
@@ -56,11 +52,4 @@ func (sd StatusDB) SaveToOutputCSV(filename string) error {
 
 	return nil
 
-}
-
-// add print method to statusDB type
-func (sd StatusDB) Print() {
-	for _, status := range sd {
-		fmt.Println(status.Name, status.Status, status.ResponseTime, status.ResponseSize, status.Err)
-	}
 }

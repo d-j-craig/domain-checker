@@ -1,0 +1,30 @@
+{{define "content"}}
+    <table class="striped">
+        <thead>
+            <tr>
+                <th scope="col">Domain Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Response Time (ms)</th>
+                <th scope="col">Response Size (KB)</th>
+                <th scope="col">Error</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{range .Domains}}                  
+            <tr>
+                <td>{{.Name}}</td>
+                <td>{{.Status}}</td>
+                <td>{{printf "%.0f" .ResponseTime}}</td>
+                <td>{{printf "%.0f" .ResponseSize}}</td>
+                <td>{{.Err}}</td>
+            </tr>        
+        {{end}}
+        </tbody>
+        <tfoot>
+            <tr>
+            </tr>
+        </tfoot>
+    </table>
+    <p><a href="/downloadcsv">Download CSV</a></p>
+    <p><a href="/input">Back to File Upload</a></p>   
+{{end}}

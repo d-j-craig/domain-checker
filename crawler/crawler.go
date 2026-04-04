@@ -7,8 +7,10 @@ import (
 	"time"
 )
 
+// Takes in the slice of domain names from the form, goes to the site and extracts the data
+// it returns a slice of structs call
 // sends http GET request to extract status code and estimate domain response time.
-func GetStatus(dl types.DomainList) types.StatusDB {
+func GetStatus(dl []string) types.StatusDB {
 
 	// create a go channel and create a count variable.
 	c := make(chan types.StatusList)
@@ -19,8 +21,8 @@ func GetStatus(dl types.DomainList) types.StatusDB {
 		go func(domain string) {
 
 			startTime := time.Now()
-			resp, err := http.Get(domain)
-			elapsed := time.Since(startTime).Seconds()
+			resp, err := http.Get("https://" + domain)
+			elapsed := time.Since(startTime).Milliseconds()
 
 			// Define status struct for each domain
 			status := types.StatusList{
@@ -39,8 +41,8 @@ func GetStatus(dl types.DomainList) types.StatusDB {
 
 				if readErr == nil {
 					status.Status = resp.StatusCode
-					status.ResponseTime = elapsed
-					status.ResponseSize = float64(len(body))
+					status.ResponseTime = float64(elapsed) // convert to float
+					status.ResponseSize = float64(len(body)/1000) // convert to flaot then bytes to kilobytes
 				} else {
 					status.Err = readErr
 				}

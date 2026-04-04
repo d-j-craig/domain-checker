@@ -1,0 +1,11 @@
+{{define "content"}}
+    <form method="POST" action="/process" enctype="multipart/form-data">
+            <fieldset>            
+            <label for="csv-file" >Upload CSV containing domain names:</label>
+            <div role="group">
+            <input type="file" accept=".csv" name="csv-file" id="csv-file">
+            <button type="submit">Upload</button>
+            </div>
+            </fieldset>      
+    </form>
+{{end}}

@@ -1,0 +1,8 @@
+domain,status,response_time_ms,response_size_kb,error
+bbc.co.uk,200,226.0000,696.0000,
+theguardian.co.uk,200,284.0000,1494.0000,
+x.com,200,246.0000,246.0000,
+amazon.com,200,692.0000,5.0000,
+google.com,200,668.0000,80.0000,
+facebook.com,200,591.0000,417.0000,
+dailymail.co.uk,200,1818.0000,1344.0000,
