@@ -2,12 +2,55 @@ package crawler
 
 import (
 	"domain-checker/types"
+	"encoding/csv"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
-// Takes in the slice of domain names from the form, goes to the site and extracts the data
+// takes a filename, should be csv and returns a list of domains
+func ReadDomainsCsv(filename string) []string {
+
+	// read in the data from the csv, if there is an error flag it.
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	defer file.Close()
+
+	//create a new file reader and read in all the values and return an error if necessary
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		fmt.Println("Error reading csv:", err)
+	}
+
+	// define the domains as a blank domainList, for each record in the range above append the record to the list
+	domains := []string{}
+	for _, record := range records {
+
+		// record[0] to choose the current record
+		domain := strings.TrimSpace(record[0])
+		domain = strings.TrimPrefix(domain, "\ufeff")
+
+		// check if domain contains the proper prefixes
+		if !strings.HasPrefix(domain, "http://") && !strings.HasPrefix(domain, "https://") {
+			domain = "https://" + domain
+		}
+
+		// append domain to domains list
+		domains = append(domains, domain)
+
+	}
+
+	return domains
+
+}
+
+// Takes in the slice of domain names from the csv, goes to the site and extracts the data
 // it returns a slice of structs call
 // sends http GET request to extract status code and estimate domain response time.
 func GetStatus(dl []string) types.StatusDB {
@@ -21,7 +64,7 @@ func GetStatus(dl []string) types.StatusDB {
 		go func(domain string) {
 
 			startTime := time.Now()
-			resp, err := http.Get("https://" + domain)
+			resp, err := http.Get(domain)
 			elapsed := time.Since(startTime).Milliseconds()
 
 			// Define status struct for each domain
@@ -62,3 +105,5 @@ func GetStatus(dl []string) types.StatusDB {
 
 	return results
 }
+
+
