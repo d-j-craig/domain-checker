@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
+	"domain-checker/db"
 	"domain-checker/handlers"
 	"fmt"
+	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 )
 
 // Check the status of web domains
@@ -11,8 +16,16 @@ import (
 // Output: domains with status code
 
 func main() {
-
 	
+	// loads .env into environment variables
+	godotenv.Load()
+
+	ctx := context.Background()
+
+	if err := db.InitDB(ctx); err != nil {
+		log.Fatalf("Failed to connect to DB: %v", err)
+	}
+	defer db.CloseDB(ctx)
 
 	// Serves form input to upload csv files
 	http.HandleFunc("/", handlers.InputHandler)
@@ -30,7 +43,8 @@ func main() {
 		w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, downloadName))
 		http.ServeFile(w, req, outputFilePath)
 	})
-	
+
+	fmt.Println("Server running on port 8080")
 	http.ListenAndServe(":8080", nil)
 
 }

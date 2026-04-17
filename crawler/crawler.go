@@ -42,7 +42,7 @@ func GetStatus(dl []string) types.StatusDB {
 				if readErr == nil {
 					status.Status = resp.StatusCode
 					status.ResponseTime = float64(elapsed) // convert to float
-					status.ResponseSize = float64(len(body)/1000) // convert to flaot then bytes to kilobytes
+					status.ResponseSize = float64(len(body)/1000) // convert to float then bytes to kilobytes
 				} else {
 					status.Err = readErr
 				}
