@@ -83,6 +83,7 @@ func GetStatus(dl []string) types.StatusDB {
 				defer resp.Body.Close()
 
 				if readErr == nil {
+					status.Name = strings.Trim(domain, "https://")
 					status.Status = resp.StatusCode
 					status.ResponseTime = float64(elapsed) // convert to float
 					status.ResponseSize = float64(len(body)/1000) // convert to float then bytes to kilobytes

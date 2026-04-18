@@ -22,22 +22,20 @@ func main() {
 	if err := db.InitDB(); err != nil {
 		log.Fatalf("Failed to connect to DB: %v", err)
 	}
-
+	// closes dbconnection
 	defer db.CloseDB()
 
 	// Serves form input to upload csv files
-	http.HandleFunc("/", handlers.InputHandler)
+	http.HandleFunc("GET /", handlers.InputHandler)
 	
 	// Processes CSV files and sends to dashboard template and also gets the output file name
-	// TODO this will cause an issue with multiple users, think of better way to pass this data
-	var downloadName, outputFilePath string
-
-	http.HandleFunc("/process", func(w http.ResponseWriter, req *http.Request) {
-		downloadName, outputFilePath = handlers.FileHandler(w, req)
-	})
+	http.HandleFunc("POST /process", handlers.FileHandler)
 
 	// Download data in CSV format from the app.
-	http.HandleFunc("/downloadcsv", func(w http.ResponseWriter, req *http.Request){
+	http.HandleFunc("GET /downloadcsv", func(w http.ResponseWriter, req *http.Request){
+		downloadName := req.URL.Query().Get("file")
+		outputFilePath := req.URL.Query().Get("path")
+
 		w.Header().Set("Content-Type", "text/csv")
 		w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, downloadName))
 		http.ServeFile(w, req, outputFilePath)

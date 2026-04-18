@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"domain-checker/crawler"
+	"domain-checker/db"
 	"domain-checker/processors"
 	"fmt"
 	"html/template"
@@ -22,20 +22,20 @@ func InputHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 // This handlers procesess the csv file and loads the dashboard table
-func FileHandler(w http.ResponseWriter, req *http.Request) (string, string){
+func FileHandler(w http.ResponseWriter, req *http.Request) {
 
 	file, filename := processors.ParseCSVFile(w, req)
 
 	domains := processors.ScanAndProcessCSV(file)
 
-	domainData := crawler.GetStatus(domains)
+	domainData, err := db.LookUpDomain(domains)
 
 	datestamp := time.Now().Format("2006-01-02")
 	downloadName :=  datestamp + "_output_" + filename
 	outputFilePath := "data/output/" + downloadName
 	
 	
-	err := domainData.SaveToOutputCSV(outputFilePath)
+	err = domainData.SaveToOutputCSV(outputFilePath)
 	if err != nil {
 		fmt.Println("Error saving CSV:", err)
 	}
@@ -50,14 +50,14 @@ func FileHandler(w http.ResponseWriter, req *http.Request) (string, string){
 
 	data := map[string]any{
 		"Domains": domainData,
+		"DownloadName": downloadName,
+		"OutputFilePath": outputFilePath,
 	}
 
 	tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
-	return downloadName, outputFilePath
 	
 }
 
