@@ -23,7 +23,7 @@ func LookUpDomain(dl []string) (types.StatusDB, error) {
 
 	// create results statusdb
 	var results types.StatusDB
-
+	// save the returned rows in a statusDB struct
 	for rows.Next() {
 		var status types.StatusList
 		err := rows.Scan(

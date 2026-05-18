@@ -34,6 +34,8 @@ func ReadDomainsCsv(filename string) []string {
 
 		// record[0] to choose the current record
 		domain := strings.TrimSpace(record[0])
+		// This string prefix is sometimes added to the start of csvs 
+		// depending on how the csv is generated so should be trimmed
 		domain = strings.TrimPrefix(domain, "\ufeff")
 
 		// check if domain contains the proper prefixes
@@ -83,7 +85,7 @@ func GetStatus(dl []string) types.StatusDB {
 				defer resp.Body.Close()
 
 				if readErr == nil {
-					status.Name = strings.Trim(domain, "https://")
+					status.Name = strings.Trim(domain, "https://") // remove protocol for saving in db
 					status.Status = resp.StatusCode
 					status.ResponseTime = float64(elapsed) // convert to float
 					status.ResponseSize = float64(len(body)/1000) // convert to float then bytes to kilobytes

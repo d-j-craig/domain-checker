@@ -1,14 +1,12 @@
 package main
 
 import (
-	"domain-checker/crawler"
 	"domain-checker/db"
 	"fmt"
 	"log"
 
 	"github.com/joho/godotenv"
 )
-
 
 func main() {
 
@@ -23,12 +21,12 @@ func main() {
 
 	filename := "domains.csv"
 
-	domains := crawler.ReadDomainsCsv("./data/input/" + filename)
+	domains := ReadDomainsCsv("./data/input/" + filename)
 
-	domainsStatus := crawler.GetStatus(domains)
+	domainsStatus := GetStatus(domains)
 
 	db.InsertDomainData(domainsStatus)
-	
+
 	fmt.Println("Data written to DB.")
 
 }

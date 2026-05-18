@@ -18,9 +18,9 @@ func ParseCSVFile(w http.ResponseWriter, req *http.Request)(file multipart.File,
 		http.Error(w, "File too large", http.StatusBadRequest)
 		return
 	}
-	// extracts csv from form gets filename for later use
-	file, handler, err := req.FormFile("csv-file")
-	filename = handler.Filename
+	// extracts csv from form and gets filename for later use
+	file, header, err := req.FormFile("csv-file")
+	filename = header.Filename
 	if err != nil {
 		http.Error(w, "File could not be retrieved", http.StatusBadRequest)
 		return
@@ -32,7 +32,7 @@ func ParseCSVFile(w http.ResponseWriter, req *http.Request)(file multipart.File,
 }
 
 // Scans CSV, processes the file and returns the list of domains to be crawled
-func ScanAndProcessCSV(file multipart.File)(domains []string){	
+func ScanAndProcessCSV(file multipart.File) (domains []string) {	
 
 	// scans content of file 
 	scanner := bufio.NewScanner(file)
@@ -43,14 +43,5 @@ func ScanAndProcessCSV(file multipart.File)(domains []string){
 		domains = append(domains, domain)
 	}
 	return domains
-
 	
-	
-
-	
-
-	
-
-	
-
 }

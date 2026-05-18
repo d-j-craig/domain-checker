@@ -16,6 +16,7 @@ var ctx context.Context
 // initates databse for crawler (writing) and server (querying)
 func InitDB() error {
 
+	// define context to open DB connection
 	ctx = context.Background()
 
 	// parse the connection string from .env file
@@ -47,7 +48,7 @@ func CloseDB() {
 	Conn.Close(ctx)
 }
 
-func InsertDomainData(results types.StatusDB) error{
+func InsertDomainData(results types.StatusDB) error {
 	// loop through the status db 
 	for _, result := range results{
 		var domainID int64
@@ -58,7 +59,7 @@ func InsertDomainData(results types.StatusDB) error{
 		VALUES ($1)
 		ON CONFLICT (url) DO UPDATE SET url = EXCLUDED.url
 		RETURNING id
-		`,result.Name).Scan(&domainID)
+		`, result.Name).Scan(&domainID)
 		 if err != nil {
             return fmt.Errorf("domain insert failed: %w", err)
         }

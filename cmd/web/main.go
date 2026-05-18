@@ -25,14 +25,16 @@ func main() {
 	// closes dbconnection
 	defer db.CloseDB()
 
+	mux := http.NewServeMux()
+
 	// Serves form input to upload csv files
-	http.HandleFunc("GET /", handlers.InputHandler)
+	mux.HandleFunc("/", handlers.InputHandler)
 	
 	// Processes CSV files and sends to dashboard template and also gets the output file name
-	http.HandleFunc("POST /process", handlers.FileHandler)
+	mux.HandleFunc("POST /process", handlers.FileHandler)
 
 	// Download data in CSV format from the app.
-	http.HandleFunc("GET /downloadcsv", func(w http.ResponseWriter, req *http.Request){
+	mux.HandleFunc("GET /downloadcsv", func(w http.ResponseWriter, req *http.Request){
 		downloadName := req.URL.Query().Get("file")
 		outputFilePath := req.URL.Query().Get("path")
 
@@ -41,7 +43,7 @@ func main() {
 		http.ServeFile(w, req, outputFilePath)
 	})
 
-	fmt.Println("Server running on port 8080")
-	http.ListenAndServe(":8080", nil)
+	log.Println("Server running on port 8080")
+	http.ListenAndServe(":8080", mux)
 
 }
