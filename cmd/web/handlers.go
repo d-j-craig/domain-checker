@@ -31,10 +31,9 @@ func FileHandler(w http.ResponseWriter, req *http.Request) {
 	domainData, err := db.LookUpDomain(domains)
 
 	datestamp := time.Now().Format("2006-01-02")
-	downloadName :=  datestamp + "_output_" + filename
+	downloadName := datestamp + "_output_" + filename
 	outputFilePath := "data/output/" + downloadName
-	
-	
+
 	err = domainData.SaveToOutputCSV(outputFilePath)
 	if err != nil {
 		fmt.Println("Error saving CSV:", err)
@@ -49,8 +48,8 @@ func FileHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data := map[string]any{
-		"Domains": domainData,
-		"DownloadName": downloadName,
+		"Domains":        domainData,
+		"DownloadName":   downloadName,
 		"OutputFilePath": outputFilePath,
 	}
 
@@ -58,8 +57,5 @@ func FileHandler(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	
+
 }
-
-
-

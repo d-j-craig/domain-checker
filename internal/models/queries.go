@@ -2,7 +2,7 @@ package db
 
 import "domain-checker/types"
 
-func LookUpDomain(dl []string) (types.StatusDB, error) {	
+func LookUpDomain(dl []string) (types.StatusDB, error) {
 
 	// insert data into db domains table
 	rows, err := Conn.Query(ctx,
@@ -21,8 +21,9 @@ func LookUpDomain(dl []string) (types.StatusDB, error) {
 	}
 	defer rows.Close()
 
-	// create results statusdb
+	// create results statusDB
 	var results types.StatusDB
+
 	// save the returned rows in a statusDB struct
 	for rows.Next() {
 		var status types.StatusList
@@ -40,6 +41,5 @@ func LookUpDomain(dl []string) (types.StatusDB, error) {
 	}
 
 	return results, nil
-	
 
 }
